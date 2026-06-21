@@ -1,24 +1,15 @@
-package similarity
-import "vectordb/internal/storage"
+package distances
 
-func findExactMatch(vectors []storage.Vector, data []float32) (storage.Vector, bool) {
-	for _, vector := range vectors {
-		if len(vector.Data) != len(data) {
-			continue
-		}
+func ExactMatch(a, b []float32) bool {
+	if len(a) != len(b) {
+		return false
+	}
 
-		matched := true
-		for i := range data {
-			if vector.Data[i] != data[i] {
-				matched = false
-				break
-			}
-		}
-
-		if matched {
-			return vector, true
+	for i := range a {
+		if a[i] != b[i] {
+			return false
 		}
 	}
 
-	return storage.Vector{}, false
+	return true
 }

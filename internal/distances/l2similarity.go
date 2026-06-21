@@ -1,28 +1,17 @@
-package similarity
-import (
-	"math"
-	"vectordb/internal/storage"
-)
+package distances
 
-func L2similarity(vectors []storage.Vector, data []float32) (storage.Vector, bool) {
-	const threshold float32 = 0.8
+import "math"
 
-	for _, vector := range vectors {
-		if len(vector.Data) != len(data) {
-			continue
-		}
-
-		var distSum float32 = 0.0
-		for i := range data {
-			diff := vector.Data[i] - data[i]
-			distSum += diff * diff
-		}
-
-		distance := float32(math.Sqrt(float64(distSum)))
-
-		if distance <= threshold {
-			return vector, true
-		}
+func L2Distance(a, b []float32) float32 {
+	if len(a) != len(b) || len(a) == 0 {
+		return float32(math.Inf(1))
 	}
-	return storage.Vector{}, false
+
+	var distSum float32
+	for i := range a {
+		diff := a[i] - b[i]
+		distSum += diff * diff
+	}
+
+	return float32(math.Sqrt(float64(distSum)))
 }

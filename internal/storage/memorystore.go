@@ -1,5 +1,10 @@
 package storage
 
+import (
+	"vectordb/internal/indexes"
+	flatindex "vectordb/internal/indexes/flat"
+)
+
 type Vector struct {
 	ID   int
 	Data []float32
@@ -9,50 +14,59 @@ func (v Vector) Size() int {
 	return len(v.Data)
 }
 
+func (v Vector) GetID() int {
+	return v.ID
+}
+
+func (v Vector) GetData() []float32 {
+	return v.Data
+}
+
 type VectorStore struct {
-	vectors []Vector
-	nextID  int
+	flatindex *flatindex.FlatIndex
+}
+
+func newVector(id int, data []float32) indexes.Vector {
+	return Vector{ID: id, Data: data}
 }
 
 func NewVectorStore() *VectorStore {
-	return &VectorStore{}
+	return &VectorStore{flatindex: flatindex.NewFlatIndex(newVector)}
+}
+
+func (vs *VectorStore) ensureIndex() {
+	if vs.flatindex == nil {
+		vs.flatindex = flatindex.NewFlatIndex(newVector)
+	}
 }
 
 func (vs *VectorStore) Add(data []float32) Vector {
-	v := Vector{
-		ID:   vs.nextID,
-		Data: data,
-	}
-
-	vs.vectors = append(vs.vectors, v)
-	vs.nextID++
-
-	return v
+	vs.ensureIndex()
+	return vs.flatindex.Add(data).(Vector)
 }
 
 func (vs *VectorStore) DeleteByID(id int) bool {
-	for i, v := range vs.vectors {
-		if v.ID == id {
-			vs.vectors = append(vs.vectors[:i], vs.vectors[i+1:]...)
-			return true
-		}
-	}
-
-	return false
+	vs.ensureIndex()
+	return vs.flatindex.DeleteByID(id)
 }
 
 func (vs *VectorStore) FindByID(id int) (Vector, bool) {
-	for _, v := range vs.vectors {
-		if v.ID == id {
-			return v, true
-		}
+	vs.ensureIndex()
+	v, ok := vs.flatindex.FindByID(id)
+	if !ok {
+		return Vector{}, false
 	}
 
-	return Vector{}, false
+	return v.(Vector), true
 }
 
 func (vs *VectorStore) All() []Vector {
-	result := make([]Vector, len(vs.vectors))
-	copy(result, vs.vectors)
+	vs.ensureIndex()
+	vectors := vs.flatindex.All()
+	result := make([]Vector, len(vectors))
+	for i, vector := range vectors {
+		result[i] = vector.(Vector)
+	}
+
 	return result
 }
