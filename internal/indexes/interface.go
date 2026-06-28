@@ -6,3 +6,12 @@ type Vector interface {
 	GetData() []float32
 	GetText() string
 }
+
+// Index is the interface that all index implementations must implement
+type Index interface {
+	Add(data []float32, text string) Vector
+	DeleteByID(id int) bool
+	FindByID(id int) (Vector, bool)
+	All() []Vector
+	SearchByExactData(data []float32, searchtype string) (Vector, bool)
+}

@@ -6,7 +6,7 @@ func (vs *VectorStore) SearchByID(id int) (Vector, bool) {
 
 func (vs *VectorStore) SearchByExactData(data []float32, searchtype string) (Vector, bool) {
 	vs.ensureIndex()
-	v, ok := vs.flatindex.SearchByExactData(data, searchtype)
+	v, ok := vs.index.SearchByExactData(data, searchtype)
 	if !ok {
 		return Vector{}, false
 	}
