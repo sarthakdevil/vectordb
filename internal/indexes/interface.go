@@ -4,4 +4,5 @@ package indexes
 type Vector interface {
 	GetID() int
 	GetData() []float32
+	GetText() string
 }

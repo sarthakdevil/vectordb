@@ -8,15 +8,15 @@ import (
 type FlatIndex struct {
 	vectors   []indexes.Vector
 	nextID    int
-	newVector func(id int, data []float32) indexes.Vector
+	newVector func(id int, data []float32, text string) indexes.Vector
 }
 
-func NewFlatIndex(newVector func(id int, data []float32) indexes.Vector) *FlatIndex {
+func NewFlatIndex(newVector func(id int, data []float32, text string) indexes.Vector) *FlatIndex {
 	return &FlatIndex{newVector: newVector}
 }
 
-func (fi *FlatIndex) Add(data []float32) indexes.Vector {
-	v := fi.newVector(fi.nextID, data)
+func (fi *FlatIndex) Add(data []float32, text string) indexes.Vector {
+	v := fi.newVector(fi.nextID, data, text)
 	fi.vectors = append(fi.vectors, v)
 	fi.nextID++
 

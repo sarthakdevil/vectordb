@@ -13,7 +13,7 @@ import (
 // - Rebuilds the clusters every 100 additions
 type IVFIndex struct {
 	vectors     []indexes.Vector
-	newVector   func(id int, data []float32) indexes.Vector
+	newVector   func(id int, data []float32, text string) indexes.Vector
 	nextID      int
 	centroids   [][]float32      
 	clusters    map[int][]indexes.Vector
@@ -21,7 +21,7 @@ type IVFIndex struct {
 	numClusters int                      
 }
 
-func NewIVFIndex(newVector func(id int, data []float32) indexes.Vector) *IVFIndex {
+func NewIVFIndex(newVector func(id int, data []float32, text string) indexes.Vector) *IVFIndex {
 	return &IVFIndex{
 		newVector:   newVector,
 		clusters:    make(map[int][]indexes.Vector),
@@ -29,8 +29,8 @@ func NewIVFIndex(newVector func(id int, data []float32) indexes.Vector) *IVFInde
 	}
 }
 
-func (idx *IVFIndex) Add(data []float32) indexes.Vector {
-	v := idx.newVector(idx.nextID, data)
+func (idx *IVFIndex) Add(data []float32, text string) indexes.Vector {
+	v := idx.newVector(idx.nextID, data, text)
 	idx.vectors = append(idx.vectors, v)
 	idx.nextID++
 	idx.addCount++

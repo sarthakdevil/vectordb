@@ -8,6 +8,7 @@ import (
 type Vector struct {
 	ID   int
 	Data []float32
+	Text string
 }
 
 func (v Vector) Size() int {
@@ -22,12 +23,16 @@ func (v Vector) GetData() []float32 {
 	return v.Data
 }
 
+func (v Vector) GetText() string {
+	return v.Text
+}
+
 type VectorStore struct {
 	flatindex *flatindex.FlatIndex
 }
 
-func newVector(id int, data []float32) indexes.Vector {
-	return Vector{ID: id, Data: data}
+func newVector(id int, data []float32, text string) indexes.Vector {
+	return Vector{ID: id, Data: data, Text: text}
 }
 
 func NewVectorStore() *VectorStore {
@@ -40,9 +45,9 @@ func (vs *VectorStore) ensureIndex() {
 	}
 }
 
-func (vs *VectorStore) Add(data []float32) Vector {
+func (vs *VectorStore) Add(data []float32, text string) Vector {
 	vs.ensureIndex()
-	return vs.flatindex.Add(data).(Vector)
+	return vs.flatindex.Add(data, text).(Vector)
 }
 
 func (vs *VectorStore) DeleteByID(id int) bool {
