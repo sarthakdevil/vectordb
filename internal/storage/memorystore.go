@@ -45,24 +45,15 @@ func NewVectorStore(indexType string) *VectorStore {
 	}
 }
 
-func (vs *VectorStore) ensureIndex() {
-	if vs.index == nil {
-		vs.index = flatindex.NewFlatIndex(newVector)
-	}
-}
-
 func (vs *VectorStore) Add(data []float32, text string) Vector {
-	vs.ensureIndex()
 	return vs.index.Add(data, text).(Vector)
 }
 
 func (vs *VectorStore) DeleteByID(id int) bool {
-	vs.ensureIndex()
 	return vs.index.DeleteByID(id)
 }
 
 func (vs *VectorStore) FindByID(id int) (Vector, bool) {
-	vs.ensureIndex()
 	v, ok := vs.index.FindByID(id)
 	if !ok {
 		return Vector{}, false
@@ -72,7 +63,6 @@ func (vs *VectorStore) FindByID(id int) (Vector, bool) {
 }
 
 func (vs *VectorStore) All() []Vector {
-	vs.ensureIndex()
 	vectors := vs.index.All()
 	result := make([]Vector, len(vectors))
 	for i, vector := range vectors {

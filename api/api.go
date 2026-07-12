@@ -9,7 +9,7 @@ import (
 	"vectordb/internal/storage"
 )
 
-var store = storage.NewVectorStore("ivf")
+var store *storage.VectorStore
 
 type responseMessage struct {
 	Type   string         `json:"type"`
@@ -61,6 +61,11 @@ func insertvectors(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if store == nil {
+		writeError(w, http.StatusBadRequest, "no index exists, create one first with POST /create-index")
+		return
+	}
+
 	var req insertRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid JSON: "+err.Error())
@@ -86,6 +91,11 @@ func Deletevectors(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if store == nil {
+		writeError(w, http.StatusBadRequest, "no index exists, create one first with POST /create-index")
+		return
+	}
+
 	idStr := r.URL.Query().Get("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -106,6 +116,11 @@ func Deletevectors(w http.ResponseWriter, r *http.Request) {
 func handleSearch(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		writeError(w, http.StatusMethodNotAllowed, "only POST allowed")
+		return
+	}
+
+	if store == nil {
+		writeError(w, http.StatusBadRequest, "no index exists, create one first with POST /create-index")
 		return
 	}
 
