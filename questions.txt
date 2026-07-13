@@ -1,0 +1,14 @@
+What problem does the Transformer architecture solve?
+Who introduced the Transformer model?
+What does the paper mean by "attention"?
+What are the main components of the Transformer?
+How many layers are used in the base Transformer model?
+What datasets were used for evaluation?
+What task was the Transformer primarily designed for?
+Explain the encoder-decoder architecture of the Transformer.
+What are the components of the encoder layer?
+What are the components of the decoder layer?
+How does the decoder prevent attending to future tokens?
+What is residual connection and why is it used?
+What role does layer normalization play in the model?
+Describe the feed-forward network used in each layer.
